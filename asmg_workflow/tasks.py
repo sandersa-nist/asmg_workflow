@@ -9,18 +9,7 @@
 an abstract task to be done. It must have the attributes task.started and task.completed. In addition,
 the method task.execute() is designed to be overloaded to define exactly what happens when the task is run. The
 class Dependency defines a condition that should be checked before a task executes.
-Examples
---------
-    #!python
-    >>
 
-
-Requirements
-------------
-+ 
-
-Help
----------------
 """
 #-----------------------------------------------------------------------------
 # Standard Imports

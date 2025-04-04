@@ -7,18 +7,7 @@
 #-----------------------------------------------------------------------------
 """workflows == a module that allows a series of tasks to be organized as a workflow. Workflows are have a start task,
 a series of tasks with or without dependencies, and a stop task. 
-Examples
---------
-    #!python
-    >>
 
-
-Requirements
-------------
-+ 
-
-Help
----------------
 """
 #-----------------------------------------------------------------------------
 # Standard Imports
@@ -30,7 +19,7 @@ import networkx
 
 #-----------------------------------------------------------------------------
 # Third Party Imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__)))
 from workflow.tasks import *
 from workflow.utils import concurrently
 
@@ -49,9 +38,8 @@ from pyvis.network import Network
 
 
 class WorkflowSerializer():
-    """Saves the workflow to d==k or to a database"""
+    """Saves the workflow to disk or to a database"""
     pass
-
 
 class Workflow(Task):
     """Workflow == a class that organizes Tasks based on their dependencies. First create a set of tasks
@@ -59,7 +47,7 @@ class Workflow(Task):
     def __init__(self,**options ):
         defaults = {"name":auto_name("New","workflow",None,"").replace(".",""),
                    "auto_log":True,
-                   "log_serializer": YamlSerializer()}
+                   "log_serializer": YamlSerializer(),"log":True}
         self.task_options = {}
         for key,value in defaults.items():
             self.task_options[key]=value
@@ -92,7 +80,8 @@ class Workflow(Task):
 
     def reset_workflow(self):
         """Resets all of the tasks to task.started = False and task.completed = False"""
-        self.log.add_entry("Reset the workflow")
+        if self.task_options["log"]:
+            self.log.add_entry("Reset the workflow")
         for task in self.tasks:
             task.started = False
             task.completed = False
@@ -128,8 +117,10 @@ class Workflow(Task):
                             break
                         else:
                             task.execute()
-                            self.log.add_entry(f"Executed task {task.name}")
-                        self.log = self.log + task.log
+                            if self.task_options["log"]:
+                                self.log.add_entry(f"Executed task {task.name}")
+                        if self.task_options["log"]:
+                            self.log = self.log + task.log
 
                     except :
                         pass
@@ -151,7 +142,8 @@ class Workflow(Task):
                             ready_to_run.append(task)
                             ready_to_run_index_list.append(task_index)
                     concurrently(*list(map(lambda x: x.execute,ready_to_run)))
-                    self.log.add_entry(f"Starting slot {slot_index}, tasks {list(map(lambda x: x.name,ready_to_run))} have started")
+                    if self.task_options["log"]:
+                        self.log.add_entry(f"Starting slot {slot_index}, tasks {list(map(lambda x: x.name,ready_to_run))} have started")
                     if verbose:
                         print(f"Currently on loop {n_loops}")
                     n_rr_loops = 0
@@ -163,7 +155,8 @@ class Workflow(Task):
                             current_task = ready_to_run[0]
                             curent_slot_index = ready_to_run_index_list[0]
                             if current_task.completed:
-                                self.log.add_entry(f"The task {slot[curent_slot_index].name} has completed")
+                                if self.task_options["log"]:
+                                    self.log.add_entry(f"The task {slot[curent_slot_index].name} has completed")
                                 ready_to_run.pop()
                                 slot.pop(curent_slot_index)
 
@@ -189,7 +182,8 @@ class Workflow(Task):
                                 break
                             else:
                                 current_task.execute()
-                                self.log.add_entry(f"Started task {current_task.name}")
+                                if self.task_options["log"]:
+                                    self.log.add_entry(f"Started task {current_task.name}")
                                 if verbose:
                                     print(f"Starting Task {current_task.name}")
                                 slot.pop()
@@ -209,7 +203,8 @@ class Workflow(Task):
                         current_task = slot[0]
                         if current_task.completed:
                             slot.pop()
-                            self.log.add_entry(f"The task {current_task.name} has completed")
+                            if self.task_options["log"]:
+                                self.log.add_entry(f"The task {current_task.name} has completed")
                         else:
                             if current_task.started:
                                 break
@@ -219,7 +214,8 @@ class Workflow(Task):
                                     break
                                 else:
                                     current_task.execute()
-                                    self.log.add_entry(f"Started task {current_task.name}")
+                                    if self.task_options["log"]:
+                                        self.log.add_entry(f"Started task {current_task.name}")
                                     if verbose:
                                         print(f"Starting Task {current_task.name}")
                                     slot.pop()
@@ -246,7 +242,8 @@ class Workflow(Task):
                             print(f"Current task == {current_task}")
                             print(f"task.completed it {current_task.completed}, and task.started == {current_task.started}")
                         if current_task.completed:
-                            self.log.add_entry(f"{current_task.name} completed")
+                            if self.task_options["log"]:
+                                self.log.add_entry(f"{current_task.name} completed")
                             popped = slot.pop(task_index)
                             if verbose:
                                 print(f"The task {popped} was popped from slot")
@@ -264,7 +261,8 @@ class Workflow(Task):
                                     break
                                 else:
                                     current_task.execute()
-                                    self.log.add_entry(f"Started task {current_task.name}")
+                                    if self.task_options["log"]:
+                                        self.log.add_entry(f"Started task {current_task.name}")
                                     if verbose:
                                         print(f"Starting Task {current_task.name}")
                     except Exception as e:
