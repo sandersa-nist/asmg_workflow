@@ -24,15 +24,15 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = ["networkx","pyvis","matplotlib","numpy","pandas","traitlets","sortedcontainers","yaml","pymongo","pyvis"]
 
 [project.urls]
-Documentation = "https://github.com/sandersa/asmg-workflow#readme"
-Issues = "https://github.com/sandersa/asmg-workflow/issues"
-Source = "https://github.com/sandersa/asmg-workflow"
+Documentation = "https://github.com/sandersa/asmg_workflow#readme"
+Issues = "https://github.com/sandersa/asmg_workflow/issues"
+Source = "https://github.com/sandersa/asmg_workflow"
 
 [tool.hatch.version]
-path = "asmg_workflow/__about__.py"
+path = "asmg_workflow/__init__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [

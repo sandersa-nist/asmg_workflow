@@ -34,7 +34,7 @@ import time
 import uuid
 #-----------------------------------------------------------------------------
 # Third Party Imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__)))
 from workflow.logs import *
 import pyvisa as visa
 import pandas as pd
@@ -53,22 +53,18 @@ def print_time(duration = 100):
         time.sleep(1)
         current_time = datetime.datetime.now()
 
-
 def always_true(dependency):
     "Test checker that always returns True"
     return True
-
 
 def always_false(dependency):
     "Test checker that always returns False"
     return False
 
-
 def timer(dependency):
     """Timer checker that checks if a time in input = {'absolute_time':Datetime} has elapsed or
     if a relative time specified by input = {'relative_time':TimeDelta,'start_time':DateTime} has elapsed"""
     now = datetime.datetime.now()
-
     if "absolute_time" in dependency["input"].keys():
         if now>dependency["input"]["absolute_time"]:
             return True
@@ -101,14 +97,12 @@ def task_value_type_checker(dependency):
         type = False
     return completed and type
 
-
 def type_checker(dependency):
     output=True
     for key,value in dependency["input"]["variables"].items():
         if not isinstance(value,dependency["input"]["types"][key]):
             output = False
     return output
-
 
 def file_exists_checker(dependency):
     """Checks to see if a file exits, requires the dependency to have input  = {'file':fileName}"""
@@ -129,20 +123,16 @@ def visa_resource(dependency):
 def ip_resource(dependency):
     pass
 
-
 def ue_resource(dependency):
     pass
 #-----------------------------------------------------------------------------
 # Module Classes
 
-
 class DependencyError(Exception):
     pass
 
-
 class TaskError(Exception):
     pass
-
 
 class Dependency(dict):
     """A dependency is simply a dictionary with the keys: type, input,on_fail, checker, duration,
@@ -201,7 +191,7 @@ class Task():
     def __init__(self,path = None,**options):
         defaults = {"name":auto_name("New","Task",None,"").replace(".",""),
                     "auto_log":True,
-                    "log_serializer":YamlSerializer()}
+                    "log_serializer":YamlSerializer(),"log":True}
         self.task_options = {}
         for key,value in defaults.items():
             self.task_options[key]=value
@@ -218,11 +208,11 @@ class Task():
         self.dependency_times = []
         self.dependency_durations = []
         self.id = uuid.uuid4()
-        self.log = Log(file_path = auto_name(self.name,"log",os.getcwd(),self.task_options["log_serializer"].extension),
-                       auto_save =self.task_options["auto_log"],serializer  = self.task_options["log_serializer"])
-        self.log.add_entry(f"Task {self.name} was created.")
-        self.log.add_entry(f"Task id is {self.id}")
-
+        if self.task_options["log"]:
+            self.log = Log(file_path = auto_name(self.name,"log",os.getcwd(),self.task_options["log_serializer"].extension),
+                        auto_save =self.task_options["auto_log"],serializer  = self.task_options["log_serializer"])
+            self.log.add_entry(f"Task {self.name} was created.")
+            self.log.add_entry(f"Task id is {self.id}")
         self.start_time = datetime.datetime.now()
         self.timer = datetime.datetime.now()
         self.get_task_duration()
@@ -255,7 +245,8 @@ class Task():
             self.depth = depth
         new_entry = dict(dependency)
         new_entry["event"] = f"A {dependency['type']} dependency was added."
-        self.log.add_entry(new_entry)
+        if self.task_options["log"]:
+            self.log.add_entry(new_entry)
 
     def remove_dependency(self,dependency):
         """Removes a dependency in the list Task.dependencies"""
@@ -268,14 +259,12 @@ class Task():
 
     def execute(self):
         """Causes the task to run"""
-
         try:
             self.started = True
             self.completed  = True
         except Exception as e:
             self.retries += 1
             self.on_error(e)
-
 
     def get_task_duration(self):
         """Returns the current run time for the task"""
@@ -286,7 +275,8 @@ class Task():
     def throw_dependency_error(self,dependency):
         """Raises the dependency error"""
         msg = f"The task {self.name} failed at the dependency {dependency['type']}"
-        self.log.add_entry(msg)
+        if self.task_options["log"]:
+            self.log.add_entry(msg)
         raise DependencyError(msg)
 
     def on_error(self,exception):
@@ -300,15 +290,18 @@ class Task():
             dependency_met=globals()[dependency["checker"]](dependency)
             if dependency_met:
                 msg = f"The task {self.name} met the dependency {dependency['type']}"
-                self.log.add_entry(msg)
+                if self.task_options["log"]:
+                    self.log.add_entry(msg)
                 self.met_dependencies[dependency_index] = True
             else:
                 action = dependency["on_fail"]
                 # switch statement to handle a dependency check failure
                 if action in ["pass","retry"]:
                     msg = f"The task {self.name} did not meet the dependency {dependency['type']} and is passing"
-                    self.log.add_entry(msg)
-                    pass
+                    if self.task_options["log"]:
+                        self.log.add_entry(msg)
+                    else:
+                        print(msg)
 
                 elif action in ["error"]:
                     self.throw_dependency_error(dependency)
@@ -323,7 +316,10 @@ class Task():
                     if self.timer<self.current_dependency_repeat_time:
                         msg = f"""The task {self.name} did not meet the dependency {dependency['type']} at {self.timer} 
                                and is repeating until {dependency['repeat_time']}"""
-                        self.log.add_entry(msg)
+                        if self.task_options["log"]:
+                            self.log.add_entry(msg)
+                        else:
+                            print(msg)
                     else:
                         self.throw_dependency_error(dependency)
 
@@ -334,7 +330,10 @@ class Task():
                         msg = f"""The task {self.name} did not meet the dependency 
                                     {dependency['type']} for the {self.dependency_repeats[dependency_index]} time
                                     and is repeating {dependency['number_repeats']} times"""
-                        self.log.add_entry(msg)
+                        if self.task_options["log"]:
+                            self.log.add_entry(msg)
+                        else:
+                            print(msg)
                     else:
                         self.throw_dependency_error(dependency)
 
@@ -345,7 +344,10 @@ class Task():
                         msg = f"""The task {self.name} did not meet the dependency 
                                     {dependency['type']} and has been running {duration} which is less than the allotted 
                                     duration of {dependency["duration"]}"""
-                        self.log.add_entry(msg)
+                        if self.task_options["log"]:
+                            self.log.add_entry(msg)
+                        else:
+                            print(msg)
                     else:
                         self.throw_dependency_error(dependency)
 
@@ -364,10 +366,12 @@ class FunctionTask(Task):
         if kwargs:
             self.kwargs = kwargs
         try:
-            self.log.add_entry(f"Execution of function {self.function} has begun")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of function {self.function} has begun")
             self.started = True
             self.output = self.function(*self.args,**self.kwargs)
-            self.log.add_entry(f"Execution of function {self.function} has completed")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of function {self.function} has completed")
             self.completed = True
             return self.output
         except Exception as e:
@@ -394,14 +398,16 @@ class DependentFunctionTask(Task):
                     task = dependency['input']['task']
                     #print(f"The task dependency has this output: {task.output}")
                     self.task_outputs.append(task.output)
-            self.log.add_entry(f"Execution of function {self.function} has begun")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of function {self.function} has begun")
             self.started = True
             #print(f"The output of the previous function is {self.task_outputs}")
             self.output = eval(f"self.function(*{self.task_outputs})")
-            self.log.add_entry(f"Execution of function {self.function} has completed")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of function {self.function} has completed")
             self.completed = True
             return self.output
-
+        
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_tb(exc_traceback)
@@ -424,10 +430,12 @@ class MultipleDependentFunctionTask(Task):
                 if "task" in dependency.values():
                     task = dependency['input']['task']
                     self.kwargs[dependency['input']['output_name']]=task.output
-            self.log.add_entry(f"Execution of function {self.function} has begun")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of function {self.function} has begun")
             self.started = True
             self.output = eval(f"self.function(*{self.args},**{self.kwargs})")
-            self.log.add_entry(f"Execution of function {self.function} has completed")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of function {self.function} has completed")
             self.completed = True
             return self.output
         except Exception as e:
@@ -461,8 +469,6 @@ class StopTask(Task):
     def __init__(self,path = None,name  = auto_name("Stop","Task",None,"task"),**options):
         super(StopTask, self).__init__(path =path,name = name, **options)
 
-
-
 class SimpleVisaTask(Task):
     """Sends a single command to a visa resource"""
     def __init__(self,path = None,resource_name = None, command = "IDN?",mode = "query",**options):
@@ -485,7 +491,6 @@ class SimpleVisaTask(Task):
             self.completed = True
         except Exception as e:
             self.on_error(e)
-
 
 class FunctionalExperimentTask(Task):
     """Runs an experiment based on a function. The function should return data as a single dictionary"""
@@ -528,7 +533,8 @@ class FunctionalExperimentTask(Task):
                         self.run_list = eval(r" task.output")
             self.finished = []
             self.output = []
-            self.log.add_entry(f"Execution of the experiment has begun")
+            if self.task_options["log"]:
+                self.log.add_entry(f"Execution of the experiment has begun")
             self.started = True
             n = 0
             while self.run_list:
@@ -540,7 +546,8 @@ class FunctionalExperimentTask(Task):
                     log_entry["event"] = msg
                     log_entry["loop_number"] = n
                     log_entry.update(run_point)
-                    self.log.add_entry(log_entry)
+                    if self.task_options["log"]:
+                        self.log.add_entry(log_entry)
                     result = self.function(**run_point)
                     self.finished.append(run_point)
                     output_point.update(run_point)
@@ -554,7 +561,8 @@ class FunctionalExperimentTask(Task):
                         self.append_csv_row(self.output_path, output_point, header=False)
                     n += 1
                 except Exception as e:
-                    self.log.add_entry({"error": e, "loop_number": n})
+                    if self.task_options["log"]:
+                        self.log.add_entry({"error": e, "loop_number": n})
                     self.on_point_error(e)
                     print(e)
                     pass
@@ -591,10 +599,6 @@ def test_MultipleDependentFunction():
     print(f"task2 named {task2.name} whose output is {task2.output} has executed")
     task3.execute()
     print(f"task3 named {task3.name} whose output is {task3.output} has executed")
-
-
-
-
 
 def test_Dependency(number_repeats=31,repeat_time = datetime.datetime.now()+datetime.timedelta(seconds=32),
                     absolute_time = datetime.datetime.now()+datetime.timedelta(seconds=30)):
@@ -701,8 +705,6 @@ def test_FunctionTask():
     new_task = FunctionTask(function = f, args=[input_variable])
     print(f"New task directory is {dir(new_task)}")
 
-
-
 def test_type_checker():
     """Tests the type checker """
     def f(x):
@@ -720,7 +722,6 @@ def test_type_checker():
     out = new_task.execute()
     print(f"The task returned {out}")
     print(f"The task log is {new_task.log}")
-
 
 def test_task_checker():
     """Tests a task dependency and it's checker by making two simple tasks and executing them serially
@@ -788,7 +789,6 @@ def test_Task():
     new_task = Task()
     print(dir(new_task))
 
-
 def test_ShellTask(command='start "" cmd /c "echo Hello world!&echo(&pause"'):
     """Test's the ShellTask Class by passing it command and executing it """
     st = ShellTask(command=command)
@@ -816,7 +816,6 @@ def test_schedule():
             print(f"Task {task_done} was popped from slot")
 #-----------------------------------------------------------------------------
 # Module Runner
-
 
 if __name__ == '__main__':
     #test_FunctionTask()
