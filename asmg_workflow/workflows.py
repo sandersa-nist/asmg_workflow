@@ -19,9 +19,9 @@ import networkx
 
 #-----------------------------------------------------------------------------
 # Third Party Imports
-sys.path.append(os.path.join(os.path.dirname(__file__)))
-from workflow.tasks import *
-from workflow.utils import concurrently
+sys.path.append(os.path.join(os.path.dirname(__file__),".."))
+from asmg_workflow.tasks import *
+from asmg_workflow.utils import concurrently
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -56,8 +56,8 @@ class Workflow(Task):
         super(Workflow, self).__init__(**self.task_options)
         self.tasks = []
         self.schedule = []
-        start_task = StartTask(name = "Start")
-        stop_task = StopTask(name = "Stop")
+        start_task = StartTask(name = "Start",**options)
+        stop_task = StopTask(name = "Stop",**options)
         self.tasks.append(start_task)
         self.tasks.append(stop_task)
         self.graph = None
@@ -398,7 +398,7 @@ class Workflow(Task):
 
 
 def test_Workflow():
-    workflow = Workflow()
+    workflow = Workflow(log=False)
     print(dir(workflow))
     workflow.show()
 
@@ -411,8 +411,8 @@ def test_adding_tasks():
         return x**3
     print("Creating a new function task ...")
     input_variable = 3.2
-    new_task_0 = FunctionTask(function = f, args=[input_variable])
-    new_task_1 = FunctionTask(function = f, args=[input_variable])
+    new_task_0 = FunctionTask(function = f, args=[input_variable],log=False)
+    new_task_1 = FunctionTask(function = f, args=[input_variable],log=False)
     output_variable =0
     dependency = TypeDependency(input  = {"variables":{"x":input_variable},"types":{"x":(int,float)}})
     task_dependency = Dependency(type='task', on_fail='error', checker='task_checker',
@@ -420,9 +420,9 @@ def test_adding_tasks():
     new_task_1.add_dependency(dependency)
     new_task_1.check_dependencies()
     #new_task_1.execute()
-    new_task_2 = FunctionTask(function=f2, args=[output_variable])
+    new_task_2 = FunctionTask(function=f2, args=[output_variable],log=False)
     new_task_2.add_dependency(task_dependency)
-    workflow = Workflow()
+    workflow = Workflow(log=False)
     workflow.add_task(new_task_0)
     workflow.add_task(new_task_1)
     workflow.add_task(new_task_2)

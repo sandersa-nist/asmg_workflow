@@ -6,15 +6,6 @@
 # License:     MIT License
 #-----------------------------------------------------------------------------
 """Logs is a module that holds classes and functions for creating and storing a log of events.
-Examples
---------
-    #!python
-    >>
-
-
-Requirements
-------------
-+ 
 
 """
 #-----------------------------------------------------------------------------
@@ -30,7 +21,7 @@ import pickle
 import json
 #-----------------------------------------------------------------------------
 # Third Party Imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 #-----------------------------------------------------------------------------
 # Module Constants

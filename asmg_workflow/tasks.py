@@ -23,8 +23,8 @@ import time
 import uuid
 #-----------------------------------------------------------------------------
 # Third Party Imports
-sys.path.append(os.path.join(os.path.dirname(__file__)))
-from workflow.logs import *
+sys.path.append(os.path.join(os.path.dirname(__file__),".."))
+from asmg_workflow.logs import *
 import pyvisa as visa
 import pandas as pd
 #-----------------------------------------------------------------------------
@@ -691,7 +691,7 @@ def test_FunctionTask():
         return x**3
     print("Creating a new function task ...")
     input_variable = 3
-    new_task = FunctionTask(function = f, args=[input_variable])
+    new_task = FunctionTask(function = f, args=[input_variable],log=False)
     print(f"New task directory is {dir(new_task)}")
 
 def test_type_checker():
@@ -807,7 +807,7 @@ def test_schedule():
 # Module Runner
 
 if __name__ == '__main__':
-    #test_FunctionTask()
+    test_FunctionTask()
     #test_Dependency()
     #test_Task()
     #test_type_checker()
@@ -817,4 +817,4 @@ if __name__ == '__main__':
     #test_schedule()
     #test_two_FunctionTasks()
     #test_DependentFunctionTask()
-    test_MultipleDependentFunction()
+    #test_MultipleDependentFunction()
