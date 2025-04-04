@@ -30,9 +30,9 @@ __version__ = '0.1.3'
 "Constant that determines if import statements are echoed to output"
 # The new module load scheme can be for module in DE_API_MODULES.keys()
 # -----------------------------------------------------------------------------
-DE_API_MODULES = {"workflow.logs": True,
-                  "workflow.tasks": True,
-                  "workflow.workflows": True,
+DE_API_MODULES = {"asmg_workflow.logs": True,
+                  "asmg_workflow.tasks": True,
+                  "asmg_workflow.workflows": True,
                   }
 
 "Dictionary that controls the definition of the API, this can be set to leave out any unwanted modules. Also it is" \

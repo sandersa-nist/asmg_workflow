@@ -386,6 +386,8 @@ class Workflow(Task):
         if show_options['type_'] == 'nx':
             self.display_layout = networkx.spring_layout(self.graph)
             nx.draw(self.graph, with_labels=True, font_weight='bold')
+            if not show_options["notebook"]:
+                plt.show()
 
         elif show_options['type_'] == 'pyvis':
             net = Network(notebook=show_options['notebook'])
