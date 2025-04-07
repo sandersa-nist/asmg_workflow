@@ -62,8 +62,8 @@ class Workflow(Task):
 
         self.tasks = []
         self.schedule = []
-        start_task = StartTask(name = f"Start_{self.task_options['name']}",**broadcast_options)
-        stop_task = StopTask(name = f"Start_{self.task_options['name']}",**broadcast_options)
+        start_task = StartTask(name = f"Start_{self.task_options['name']}",**self.broadcast_options)
+        stop_task = StopTask(name = f"Start_{self.task_options['name']}",**self.broadcast_options)
         self.tasks.append(start_task)
         self.tasks.append(stop_task)
         self.graph = None
