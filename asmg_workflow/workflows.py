@@ -49,15 +49,21 @@ class Workflow(Task):
                    "auto_log":True,
                    "log_serializer": YamlSerializer(),"log":True}
         self.task_options = {}
+        broadcast_option_keys = ["log","log_serializer","auto_log"]
+        self.broadcast_options = {}
         for key,value in defaults.items():
             self.task_options[key]=value
         for key,value in options.items():
             self.task_options[key] = value
         super(Workflow, self).__init__(**self.task_options)
+        for key,value in self.task_options.items():
+            if key in broadcast_option_keys:
+                self.broadcast_options[key]=value
+
         self.tasks = []
         self.schedule = []
-        start_task = StartTask(name = "Start",**options)
-        stop_task = StopTask(name = "Stop",**options)
+        start_task = StartTask(name = f"Start_{self.task_options['name']}",**broadcast_options)
+        stop_task = StopTask(name = f"Start_{self.task_options['name']}",**broadcast_options)
         self.tasks.append(start_task)
         self.tasks.append(stop_task)
         self.graph = None

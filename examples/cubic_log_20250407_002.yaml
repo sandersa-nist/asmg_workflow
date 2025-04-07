@@ -1,0 +1,139 @@
+- event: Task cubic was created.
+  timestamp: 2025-04-07 14:43:56.081847
+- event: Task id is 27a43cc5-f7d4-483a-a727-97b34326f356
+  timestamp: 2025-04-07 14:43:56.082309
+- checker: task_checker
+  duration: null
+  event: A task dependency was added.
+  input:
+    task: !!python/object:asmg_workflow.tasks.DependentFunctionTask
+      completed: false
+      dependencies:
+      - !!python/object/new:asmg_workflow.tasks.TaskDependency
+        dictitems:
+          checker: task_checker
+          duration: null
+          input: &id003
+            task: !!python/object:asmg_workflow.tasks.FunctionTask
+              args:
+              - 1010000000.0
+              completed: false
+              dependencies: []
+              dependency_durations: []
+              dependency_repeats: []
+              dependency_times: []
+              depth: 0
+              duration: !!python/object/apply:datetime.timedelta
+              - 0
+              - 0
+              - 5
+              function: !!python/name:__main__.f1 ''
+              id: !!python/object:uuid.UUID
+                int: 270620148025139909897710066078949262723
+              kwargs: {}
+              log: !!python/object:asmg_workflow.logs.Log
+                auto_name: New_Log_20250407_001.yaml
+                file_path: linear_log_20250407_002.yaml
+                log:
+                - event: Task linear was created.
+                  timestamp: 2025-04-07 14:43:56.077811
+                - event: Task id is cb978b6f-1312-40d7-a5a2-71e949574583
+                  timestamp: 2025-04-07 14:43:56.078695
+                log_options:
+                  auto_save: true
+                  auto_save_mode: w
+                  db_serializer: null
+                  directory: c:\Users\sandersa\VSCode Repos\asmg_workflow\examples
+                  formatting_string: null
+                  general_descriptor: Log
+                  lock_keys: false
+                  required_keys: null
+                  serializer: &id001 !!python/object:asmg_workflow.logs.YamlSerializer
+                    extension: yaml
+                  specific_descriptor: New
+                n: 0
+                serializer: *id001
+              max_tries: 1
+              met_dependencies: []
+              name: linear
+              output: null
+              path: New_Task_20250407_001.task
+              retries: 0
+              start_time: 2025-04-07 14:43:56.079269
+              started: false
+              task_options:
+                auto_log: true
+                log: true
+                log_serializer: *id001
+                name: linear
+              timer: 2025-04-07 14:43:56.079274
+          number_repeats: null
+          on_fail: error
+          repeat_time: null
+          type: task
+      dependency_durations:
+      - &id002 !!python/object/apply:datetime.timedelta
+        - 0
+        - 0
+        - 1847
+      dependency_repeats:
+      - 0
+      dependency_times:
+      - &id005 2025-04-07 14:43:56.082942
+      depth: 1
+      duration: *id002
+      function: !!python/name:__main__.f2 ''
+      id: !!python/object:uuid.UUID
+        int: 163181053043526451553549486901833071608
+      log: !!python/object:asmg_workflow.logs.Log
+        auto_name: New_Log_20250407_001.yaml
+        file_path: square_log_20250407_002.yaml
+        log:
+        - event: Task square was created.
+          timestamp: 2025-04-07 14:43:56.080081
+        - event: Task id is 7ac38713-8058-4fa9-9f57-7a55d9617bf8
+          timestamp: 2025-04-07 14:43:56.080610
+        - checker: task_checker
+          duration: null
+          event: A task dependency was added.
+          input: *id003
+          number_repeats: null
+          on_fail: error
+          repeat_time: null
+          timestamp: 2025-04-07 14:43:56.082949
+          type: task
+        log_options:
+          auto_save: true
+          auto_save_mode: w
+          db_serializer: null
+          directory: c:\Users\sandersa\VSCode Repos\asmg_workflow\examples
+          formatting_string: null
+          general_descriptor: Log
+          lock_keys: false
+          required_keys: null
+          serializer: &id004 !!python/object:asmg_workflow.logs.YamlSerializer
+            extension: yaml
+          specific_descriptor: New
+        n: 0
+        serializer: *id004
+      max_tries: 1
+      met_dependencies:
+      - false
+      name: square
+      output: null
+      path: New_Task_20250407_001.task
+      retries: 0
+      start_time: 2025-04-07 14:43:56.081095
+      started: false
+      task_options:
+        auto_log: true
+        log: true
+        log_serializer: *id004
+        name: square
+      task_outputs: []
+      timer: *id005
+  number_repeats: null
+  on_fail: error
+  repeat_time: null
+  timestamp: 2025-04-07 14:43:56.085659
+  type: task
