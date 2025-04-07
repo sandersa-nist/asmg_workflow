@@ -24,7 +24,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["networkx","pyvis","matplotlib","numpy","pandas","traitlets","sortedcontainers","yaml","pymongo","pyvis"]
+dependencies = ["networkx","pyvis","matplotlib","numpy","pandas","traitlets","sortedcontainers","pyyaml","pymongo","pyvis"]
 
 [project.urls]
 Documentation = "https://github.com/sandersa/asmg_workflow#readme"

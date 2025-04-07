@@ -5,7 +5,7 @@
 # Created:     11/23/2020
 # License:     MIT License
 #-----------------------------------------------------------------------------
-"""tasks is a module that holds the predefined tasks for the nasctn_workflow software. A Task is a class that represents
+"""tasks is a module that holds the predefined tasks for the asmg_workflow software. A Task is a class that represents
 an abstract task to be done. It must have the attributes task.started and task.completed. In addition,
 the method task.execute() is designed to be overloaded to define exactly what happens when the task is run. The
 class Dependency defines a condition that should be checked before a task executes.
