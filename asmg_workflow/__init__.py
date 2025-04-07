@@ -57,9 +57,9 @@ for module in sorted(DE_API_MODULES.keys()):
                 time_difference = end_timer - start_timer
                 print(("It took {0} s to import {1}".format(time_difference.total_seconds(), module)))
                 start_timer = end_timer
-    except:
+    except Exception as e:
         print(f"The {module} failed to import")
-        pass
+        print(e)
 if TIMED_IMPORT:
     end_timer = datetime.datetime.utcnow()
     time_difference = end_timer - first_timer
