@@ -14,9 +14,36 @@ pip install git+https://github.com/sandersa-nist/asmg_workflow.git
 pip install <path to top folder>
 ```
 # Use Case
-Have you developed procedural code to run an experiment over and over? Each time you do this, you have to develop a set of tasks and put them in order with some conditional logic. Once you do this, you almost always have to do it again in the future. It would be handy to re-use the tasks and be able to rearrange them in the order forced by the conditional logic of each problem. This package allows you to do that and then keep building more and more complicated chains of those type of situations.   
+Have you developed procedural code to run an experiment over and over? Each time you do this, you have to develop a set of tasks and put them in order with some conditional logic. Once you do this, you almost always have to do it again in the future. It would be handy to re-use the tasks and be able to rearrange them in the order forced by the conditional logic of each problem. This package allows you to do that and then keep building more and more complicated chains of those type of situations.
+For example, say you have to calculate a value, then based on that value create a design of experiments, then take data using a function using the values from that design of experiments, and then plot the results. The basic way to do this is
+```python 
+start_number =100
+# tasks
+task_1 = FunctionTask(function = calculate_value,args = [start_number],name = "calculate value")
+task_2 = DependentFunctionTask(function = create_doe, name ="doe" )
+experiment_task = FunctionalExperimentTask(function = do_experiment,dependent_run_list = True)
+# dependencies
+# The first one is that the first task is done
+dependency_1 = TaskDependency(input  = {"task":task_1})
+# The next one is that the second task is done
+dependency_2 = TaskDependency(input  = {"task":task_2})
 
-1. 
+# add the dependencies
+task_2.add_dependency(dependency_1)
+experiment_task.add_dependency(dependency_2)
+
+#make the workflow
+wf = Workflow()
+wf.add_task(task_1)
+wf.add_task(task_2)
+wf.add_task(experiment_task)
+
+#then execute
+wf.execute()
+
+```
+
+ 
 
 # Workflow
 1. Define the tasks to be done. Each task can be a predefined one, or a new task defined through inheritance.
@@ -26,7 +53,7 @@ Have you developed procedural code to run an experiment over and over? Each time
 
 
 # Code Structure
-This repository relies on [simulations.py](./experimental_design/experimental_designs.py) for its functionality, for API style documentation see [documentation](https://sandersa-nist.github.io/experimental_design/documentation/experimental_design/experimental_designs.html).
+This repository relies on [tasks.py](./asmg_workflow/tasks.py), [workflows.py](./asmg_workflow/workflows.py), [logs.py](./asmg_workflow/logs.py) and [utils.py](./asmg_workflow/utils.py)for its functionality, for API style documentation see [documentation](https://sandersa-nist.github.io/asmg_workflow/documentation/asmg_workflow.html).
 
 # [Example](./examples/workflow_tasks_example.ipynb)
 # [API Documentation](https://sandersa-nist.github.io/asmg_workflow/documentation/asmg_workflow.html) 
