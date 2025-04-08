@@ -33,7 +33,7 @@ task_2.add_dependency(dependency_1)
 experiment_task.add_dependency(dependency_2)
 
 #make the workflow
-wf = Workflow()
+wf = Workflow(name='Example')
 wf.add_task(task_1)
 wf.add_task(task_2)
 wf.add_task(experiment_task)
@@ -42,7 +42,7 @@ wf.add_task(experiment_task)
 wf.execute()
 
 ```
-
+It is worth noting the Workflow itself is a task so you can use it as the beginning task of a much larger workflow.
  
 
 # Workflow
