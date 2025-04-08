@@ -91,7 +91,7 @@ class Workflow(Task):
         for task in self.tasks:
             task.started = False
             task.completed = False
-            task.ouput = None
+            task.output = None
 
     def arrange_tasks(self):
         """Makes the schedule for the workflow"""
